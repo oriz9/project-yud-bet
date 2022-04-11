@@ -21,6 +21,32 @@ class my_server:
         self.server_socket.listen()
         print("Listening for clients...")
 
+
+    def loginking(self, current_socket):
+        print("i am here")
+        exist_name = False
+        right_pas = False
+        while right_pas == False:
+            data = ""
+            data = current_socket.recv(my_server.MAX_MSG_LENGTH).decode()
+            data = data.split(",")
+            print(data[0])
+            print(data[1])
+            password_account = Mongodb_A.getPasw_name(data[0])
+            print(password_account)
+            if password_account != "":
+                exist_name = True
+                print("yes sone")
+                if password_account == data[1]:
+                    right_pas = True
+                    print("oyo sismma")
+                    current_socket.send((str("true")).encode())
+                    break
+            current_socket.send((str("false")).encode())
+
+
+
+
     def log_in_account(self, current_socket):
         right_name = False
         right_pas = False
@@ -28,7 +54,6 @@ class my_server:
         while right_name == False:
             data = current_socket.recv(my_server.MAX_MSG_LENGTH).decode()
             password_account = Mongodb_A.getPasw_name(data)
-            print("123")
             print(password_account)
             if password_account == "":
                 current_socket.send((str("bad name try again")).encode())
@@ -57,7 +82,7 @@ class my_server:
                 data = current_socket.recv(my_server.MAX_MSG_LENGTH).decode()
                 print(data)
                 if data == "want connect":
-                    self.log_in_account(current_socket)
+                    self.loginking(current_socket)
                 elif data == "":
                     print("Connection closed", )
                     self.client_sockets.remove(current_socket)
