@@ -1,4 +1,7 @@
+import time
 import PySimpleGUI as sg
+import Client
+import socket
 
 sg.theme('Dark')   # Add a touch of color
 # All the stuff inside your window.
@@ -34,28 +37,32 @@ uploading_lay = [[sg.Text('', size=(50, 1), relief='sunken', font=('Courier', 11
 #-------------------------------------------------------------------------------------
 
 
-def login_ui():
-
+def login_ui(socket):
     window = sg.Window('Window Title', login_lay)
-
     while True:
         event, values = window.read()
         if event == sg.WIN_CLOSED or event == 'Cancel':  # if user closes window or clicks cancel
             break
-        if values[0] != name and values[1] != password:
-            window['cook'].update("not found try again")
-            print("pls try again")
 
-            print("well done connect")
-        else:
-            print("well done connect")
+        data = f"{values[0]},{values[1]}"
+        socket.send((data).encode())
+        data = socket.recv(1024).decode()
+        print(data)
+        if data == "false":
+            window['cook'].update("not found try again")
+            #print("not found")
+        elif data == "true":
+            #print("well done connect")
             window['cook'].update("well done connect")
+            print("kakakakakak")
+            time.sleep(3)
+            #break
 
     window.close()
 
 
-if __name__ == '__main__':
-    login_ui()
+#if __name__ == '__main__':
+ #   login_ui()
 
     #window = sg.Window('Window Title', login_lay)
     #while True:
@@ -67,6 +74,15 @@ if __name__ == '__main__':
         #else:
          #   print("pls try again")
     #window.close()
+
+
+
+
+
+
+
+
+
 
 
 
