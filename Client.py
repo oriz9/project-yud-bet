@@ -1,5 +1,6 @@
 import socket
 import first_UI as ui
+import admin
 import select
 import time
 import threading
@@ -11,21 +12,14 @@ class be_client:
     def __init__(self):
         self.client_socket = socket.socket()
         self.client_socket.connect(("127.0.0.1", 5555))
-
+        self.admin = False
 
     def log_in(self):
         self.client_socket.send(("want connect").encode())
         ui.login_ui(self.client_socket)
-        #is_log = False
-        #self.client_socket.send(("want connect").encode())
-        #data = self.client_socket.recv(1024).decode()
-        #print(data)
-        #while is_log == False:
-         #   self.client_socket.send(str(input()).encode())
-          #  data = self.client_socket.recv(1024).decode()
-           # print(data)
-           # if data == "well done u connect":
-            #    is_log = True
+
+    def choose_foler(self):
+        ui.file_explorer_gui()
 
     def tiksoret(self):
         # rlist, wlist, xlist = select.select([self.client_socket], [], [], 1)
@@ -33,7 +27,7 @@ class be_client:
         # print("The server sent " + data)
         while True:
             # self.client_socket.send(self.the_message.encode())
-            #self.client_socket.send(str(input()).encode())
+            # self.client_socket.send(str(input()).encode())
             data = self.client_socket.recv(1024).decode()
             print(data)
 
@@ -41,4 +35,5 @@ class be_client:
 if __name__ == '__main__':
     client = be_client()
     client.log_in()
+    #client.choose_foler()
     client.tiksoret()
