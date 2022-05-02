@@ -19,11 +19,13 @@ layout_file_explorer = [
     [sg.Button(button_text="choose the usb please", key="the_folder")],
 
     [sg.Text('Your Files:')],
-    [sg.Listbox(values=tasks, size=(40, 10), key="items")],
+    [sg.Listbox(values=tasks, size=(40, 5), key="items")],
+    [sg.Button("decrypt", key="decrypt")], [sg.Button("encrypt", key="encrypt")],
     [sg.Exit()], ]
 
 
-def file_explorer_gui():
+def file_explorer_gui(name):
+    print("the folder is:" + name)
     window = sg.Window('folder Browser', layout_file_explorer)
     while True:  # Event Loop
         event, values = window.Read()
@@ -31,8 +33,20 @@ def file_explorer_gui():
             break
         if event == "the_folder":
             foldername = sg.PopupGetFolder('Select folder', no_window=True)
+            print(foldername + name)
+            foldername = foldername + name
             filenames = sorted(os.listdir(foldername))
+            print(filenames)
             window['items'].Update(filenames)
+            print(event)
+        if event == "decrypt":
+            for i in filenames:
+                open_hazpana(foldername+"/"+i, foldername+"/"+i)
+                print(foldername+"/"+i, foldername+"/"+i)
+        elif event == "encrypt":
+            for i in filenames:
+                hazapna(foldername+"/"+i, foldername+"/"+i)
+
 
 
 # ---------------------------------------------------------------------------------------
@@ -65,23 +79,31 @@ def login_ui(socket):
             window.close()
             admin.admin_panel_ui()
             # print("not found")
-        elif data == "true":
-            break
+        else:
+            folders = data
+            window.close()
+            file_explorer_gui(folders)
     window.close()
 
 # -------------------------------------------------------------------------------------
 
 
+def hazapna(file_path, dst_file_past):
+    new_bytes_to_save = ""
+    with open(file_path, 'rb') as opened_file:
+        for temp_byte in opened_file.read():
+            print(f"{temp_byte}, {temp_byte + 1}")
+            new_byte = chr(temp_byte + 1)
+            new_bytes_to_save += new_byte
+        print(new_bytes_to_save)
+        with open(dst_file_past, "w") as file_to_write:
+            file_to_write.write(new_bytes_to_save)
 
 
-
-
-
-
-
-
-
-
-
-
-
+def open_hazpana(dst_file_past ,target_file_after_open):
+    total_chars = ""
+    with open(dst_file_past, "r") as file_to_read:
+        for temp_char in file_to_read.read():
+            total_chars += chr(ord(temp_char) - 1)
+        with open(target_file_after_open, "w") as decrept_file:
+            decrept_file.write(total_chars)
