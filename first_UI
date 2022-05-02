@@ -2,45 +2,54 @@ import time
 import PySimpleGUI as sg
 import Client
 import socket
+import os
+import admin
 
-sg.theme('Dark')   # Add a touch of color
-# All the stuff inside your window.
-
+sg.theme('Dark')  # Add a touch of color
 
 name = "ori"
 password = "x"
 
+# --------------------------------------------------------------------------------------
 
-#---------------------------------------------------------------------------------------
-layout_exapele = [  [sg.Text('Some text on Row 1')],
-            [sg.Text('Enter something on Row 2'), sg.InputText()],
-            #[sg.Text('ok what i got')],
-            [sg.Button('Ok'), sg.Button('Cancel')],
-            [sg.Text('ok what i got')]]
+tasks = []
+layout_file_explorer = [
+    [sg.Text('folder Browser')],
 
-#---------------------------------------------------------------------------------------
+    [sg.Button(button_text="choose the usb please", key="the_folder")],
 
-lay = [[sg.Text("fuck you")],            [sg.Button("login")]]
+    [sg.Text('Your Files:')],
+    [sg.Listbox(values=tasks, size=(40, 10), key="items")],
+    [sg.Exit()], ]
 
-#--------------------------------------------------------------------------------------
+
+def file_explorer_gui():
+    window = sg.Window('folder Browser', layout_file_explorer)
+    while True:  # Event Loop
+        event, values = window.Read()
+        if event == sg.WIN_CLOSED or event == 'Exit':  # if user closes window or clicks cancel
+            break
+        if event == "the_folder":
+            foldername = sg.PopupGetFolder('Select folder', no_window=True)
+            filenames = sorted(os.listdir(foldername))
+            window['items'].Update(filenames)
+
+
+# ---------------------------------------------------------------------------------------
 
 login_lay = [[sg.Text("name:       "), sg.InputText()],
-            [sg.Text("passwrod: "), sg.InputText()],
-            [sg.Button("login")],
-             [sg.Text("status:", key='cook')]]
-
-#-------------------------------------------------------------------------------------
-
-uploading_lay = [[sg.Text('', size=(50, 1), relief='sunken', font=('Courier', 11),
-    text_color='yellow', background_color='black',key='TEXT')]]
-
-#-------------------------------------------------------------------------------------
+             [sg.Text("passwrod: "), sg.InputText()],
+             [sg.Button("login")],
+             [sg.Text("status:", key='cool')], ]
 
 
 def login_ui(socket):
-    window = sg.Window('Window Title', login_lay)
+    e = 0
+    window = sg.Window('login', login_lay)
+    num_try = 1
     while True:
         event, values = window.read()
+
         if event == sg.WIN_CLOSED or event == 'Cancel':  # if user closes window or clicks cancel
             break
 
@@ -49,33 +58,18 @@ def login_ui(socket):
         data = socket.recv(1024).decode()
         print(data)
         if data == "false":
-            window['cook'].update("not found try again")
-            #print("not found")
-        elif data == "true":
-            #print("well done connect")
-            window['cook'].update("well done connect")
-            print("kakakakakak")
-            time.sleep(3)
-            #break
+            window['cool'].update(f"not found try again \n number of trys: {num_try}")
+            num_try = num_try + 1
 
+        elif data == "admin":
+            window.close()
+            admin.admin_panel_ui()
+            # print("not found")
+        elif data == "true":
+            break
     window.close()
 
-
-#if __name__ == '__main__':
- #   login_ui()
-
-    #window = sg.Window('Window Title', login_lay)
-    #while True:
-     #   event, values = window.read()
-      #  if event == sg.WIN_CLOSED or event == 'Cancel': # if user closes window or clicks cancel
-       #     break
-       # if values[0] == name and values[1] == password:
-        #    print("well done connect")
-        #else:
-         #   print("pls try again")
-    #window.close()
-
-
+# -------------------------------------------------------------------------------------
 
 
 
