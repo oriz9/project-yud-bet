@@ -22,8 +22,7 @@ class my_server:
         print("Listening for clients...")
 
 
-    def loginking(self, current_socket):
-        print("i am here")
+    def log_in_account(self, current_socket):
         exist_name = False
         right_pas = False
         while right_pas == False:
@@ -39,35 +38,18 @@ class my_server:
                 print("yes sone")
                 if password_account == data[1]:
                     right_pas = True
-                    print("oyo sismma")
-                    current_socket.send((str("true")).encode())
-                    break
+                    print("oto sismma")
+                    ok = Mongodb_A.getFolders_name(data[0])
+                    print(ok)
+                    current_socket.send((str(ok)).encode())
+                    # if Mongodb_A.check_if_admin(data) == True:
+                    #     current_socket.send((str("admin")).encode())
+                    # else:
+                    #     current_socket.send((str("true")).encode())
+                    #     print(Mongodb_A.getFolders_name(data[0]))
+                    # break
             current_socket.send((str("false")).encode())
 
-
-
-
-    def log_in_account(self, current_socket):
-        right_name = False
-        right_pas = False
-        current_socket.send((str("what your name?")).encode())
-        while right_name == False:
-            data = current_socket.recv(my_server.MAX_MSG_LENGTH).decode()
-            password_account = Mongodb_A.getPasw_name(data)
-            print(password_account)
-            if password_account == "":
-                current_socket.send((str("bad name try again")).encode())
-            else:
-                right_name = True
-        current_socket.send((str("password")).encode())
-        data = current_socket.recv(my_server.MAX_MSG_LENGTH).decode()
-        while right_pas == False:
-            if data == password_account:
-                current_socket.send(("well done u connect").encode())
-                right_pas = True
-            else:
-                current_socket.send(("wrong password please try again").encode())
-            data = current_socket.recv(my_server.MAX_MSG_LENGTH).decode()
 
     def do_iteration(self):
         messsage_to_send = []
@@ -82,7 +64,7 @@ class my_server:
                 data = current_socket.recv(my_server.MAX_MSG_LENGTH).decode()
                 print(data)
                 if data == "want connect":
-                    self.loginking(current_socket)
+                    self.log_in_account(current_socket)
                 elif data == "":
                     print("Connection closed", )
                     self.client_sockets.remove(current_socket)
