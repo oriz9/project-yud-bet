@@ -8,6 +8,10 @@ import hashlib
 import os
 
 
+
+
+
+
 class be_client:
     def __init__(self):
         self.client_socket = socket.socket()
