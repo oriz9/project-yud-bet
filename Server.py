@@ -5,6 +5,7 @@ import pickle
 import Mongodb_A
 from time import sleep
 
+
 class my_server:
     MAX_MSG_LENGTH = 1024
     port = 5555
@@ -20,7 +21,6 @@ class my_server:
         self.server_socket.bind((my_server.ip, my_server.port))
         self.server_socket.listen()
         print("Listening for clients...")
-
 
     def log_in_account(self, current_socket):
         exist_name = False
@@ -42,6 +42,7 @@ class my_server:
                     ok = Mongodb_A.getFolders_name(data[0])
                     print(ok)
                     current_socket.send((str(ok)).encode())
+                    break
                     # if Mongodb_A.check_if_admin(data) == True:
                     #     current_socket.send((str("admin")).encode())
                     # else:
@@ -49,7 +50,6 @@ class my_server:
                     #     print(Mongodb_A.getFolders_name(data[0]))
                     # break
             current_socket.send((str("false")).encode())
-
 
     def do_iteration(self):
         messsage_to_send = []
@@ -79,9 +79,11 @@ class my_server:
                 current_socket.send(data.encode())
                 messsage_to_send.remove(message)
 
+
 def print_client_sockets(client_sockets):
     for c in client_sockets:
         print("\t", c.getpeername())
+
 
 def main():
     server = my_server()
@@ -89,6 +91,7 @@ def main():
 
     while True:
         server.do_iteration()
+
 
 if __name__ == '__main__':
     main()
