@@ -1,9 +1,7 @@
-import time
 import PySimpleGUI as sg
-import Client
-import socket
 import os
 import admin
+from hashlib import sha256
 
 sg.theme('Dark')  # Add a touch of color
 
@@ -24,12 +22,13 @@ layout_file_explorer = [
     [sg.Exit()], ]
 
 
-def file_explorer_gui(name):
+def file_explorer_gui(name, socket):
     print("the folder is:" + name)
     window = sg.Window('folder Browser', layout_file_explorer)
     while True:  # Event Loop
         event, values = window.Read()
-        if event == sg.WIN_CLOSED or event == 'Exit':  # if user closes window or clicks cancel
+        if event == sg.WIN_CLOSED or event == 'Exit':
+            socket.close()
             break
         if event == "the_folder":
             foldername = sg.PopupGetFolder('Select folder', no_window=True)
@@ -65,9 +64,10 @@ def login_ui(socket):
         event, values = window.read()
 
         if event == sg.WIN_CLOSED or event == 'Cancel':  # if user closes window or clicks cancel
+            socket.close()
             break
-
-        data = f"{values[0]},{values[1]}"
+        encrypt_pasw = sha256(values[1].encode()).hexdigest()
+        data = f"{values[0]},{encrypt_pasw}"
         socket.send((data).encode())
         data = socket.recv(1024).decode()
         print(data)
@@ -77,12 +77,12 @@ def login_ui(socket):
 
         elif data == "admin":
             window.close()
-            admin.admin_panel_ui()
+            admin.admin_panel_ui("bills, program", socket)
             # print("not found")
         else:
             folders = data
             window.close()
-            file_explorer_gui(folders)
+            file_explorer_gui(folders, socket)
     window.close()
 
 # -------------------------------------------------------------------------------------
