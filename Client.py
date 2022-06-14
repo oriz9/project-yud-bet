@@ -3,12 +3,8 @@ import first_UI as ui
 import admin
 import select
 import time
-import threading
 import hashlib
 import os
-
-
-
 
 
 
@@ -40,4 +36,4 @@ if __name__ == '__main__':
     client = be_client()
     client.log_in()
     #client.choose_foler()
-    client.tiksoret()
+    #client.tiksoret()
