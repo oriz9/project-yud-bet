@@ -10,9 +10,9 @@ db = client["accounts"]
 collection = db["accounts"]
 
 
-def add_account(name, password):
-    post = {"name": name, "password": password}
-    collection.insert_one(post)
+#def add_account(name, password):
+#    post = {"name": name, "password": password}
+#    collection.insert_one(post)
 
 def addd_account(accountdic):
     print(accountdic)
