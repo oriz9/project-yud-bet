@@ -2,6 +2,8 @@ import PySimpleGUI as sg
 import os
 import admin
 from hashlib import sha256
+import random
+
 
 sg.theme('Dark')  # Add a touch of color
 
@@ -23,7 +25,12 @@ layout_file_explorer = [
 
 
 def file_explorer_gui(name, socket):
+    can_encrypt = 1
+    last_crypt = ""
     print("the folder is:" + name)
+    socket.send((f"what_key,{name}").encode())
+    key = socket.recv(1024).decode()
+    key = int(key)
     window = sg.Window('folder Browser', layout_file_explorer)
     while True:  # Event Loop
         event, values = window.Read()
@@ -38,13 +45,24 @@ def file_explorer_gui(name, socket):
             print(filenames)
             window['items'].Update(filenames)
             print(event)
-        if event == "decrypt":
+        if event == "decrypt" and can_encrypt == 1:
+            can_encrypt = 0
+            print(can_encrypt)
+            socket.send((f"what_key,{name}").encode())
+            key_to_open = socket.recv(1024).decode()
+            key_to_open = int(key_to_open)
             for i in filenames:
-                open_hazpana(foldername+"/"+i, foldername+"/"+i)
+                open_hazpana(foldername+"/"+i, foldername+"/"+i, key_to_open)
                 print(foldername+"/"+i, foldername+"/"+i)
         elif event == "encrypt":
+            key_to_open = random.randint(1, 5)
+            print(key_to_open)
+            can_encrypt = 1
+            last_crypt = key_to_open
+
+            socket.send((f"change_key,{str(key_to_open)},{name}").encode())
             for i in filenames:
-                hazapna(foldername+"/"+i, foldername+"/"+i)
+                hazapna(foldername+"/"+i, foldername+"/"+i, key_to_open)
 
 
 
@@ -88,22 +106,25 @@ def login_ui(socket):
 # -------------------------------------------------------------------------------------
 
 
-def hazapna(file_path, dst_file_past):
+def hazapna(file_path, dst_file_past, key):
     new_bytes_to_save = ""
     with open(file_path, 'rb') as opened_file:
         for temp_byte in opened_file.read():
-            print(f"{temp_byte}, {temp_byte + 1}")
-            new_byte = chr(temp_byte + 1)
+            #print(f"{temp_byte}, {temp_byte + key}")
+            new_byte = chr(temp_byte + key)
             new_bytes_to_save += new_byte
-        print(new_bytes_to_save)
+        #print(new_bytes_to_save)
         with open(dst_file_past, "w") as file_to_write:
             file_to_write.write(new_bytes_to_save)
+    print(f"encrypt with: {key}")
 
 
-def open_hazpana(dst_file_past ,target_file_after_open):
+def open_hazpana(dst_file_past, target_file_after_open, key):
     total_chars = ""
     with open(dst_file_past, "r") as file_to_read:
         for temp_char in file_to_read.read():
-            total_chars += chr(ord(temp_char) - 1)
+            total_chars += chr(ord(temp_char) - key)
         with open(target_file_after_open, "w") as decrept_file:
             decrept_file.write(total_chars)
+    print(f"decrypt with: {key}")
+
