@@ -65,6 +65,17 @@ class my_server:
                 print(data)
                 if data == "want connect":
                     self.log_in_account(current_socket)
+                elif "what_key" in data:
+                    data = data.split(",")
+                    data = Mongodb_A.get_key(data[1])
+                    data = str(data)
+                    print(data)
+                    current_socket.send((data).encode())
+                elif "change_key" in data:
+                    data = data.split(",")
+                    key = data[1]
+                    folder_name = data[2]
+                    Mongodb_A.edit_key(folder_name, key)
                 elif data == "":
                     print("Connection closed", )
                     self.client_sockets.remove(current_socket)
