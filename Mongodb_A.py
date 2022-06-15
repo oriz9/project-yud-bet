@@ -19,10 +19,10 @@ def addd_account(accountdic):
     post = {"name": accountdic["name"], "password": accountdic["password"], "folder": accountdic["folder"]}
     collection.insert_one(post)
 
-def search(name):
-    result = collection.find({"name": "gilad"})
-    for result in result:
-        print(result)
+#def search(name):
+ #   result = collection.find({"name": "gilad"})
+  #  for result in result:
+    #    print(result)
 
 
 def getPasw_name(name):
@@ -69,6 +69,27 @@ def getFolders_name(name):
         folder = i["folder"]
     # print(folder)
     return folder
+
+
+
+def get_key(folder):
+    key = ""
+    folder = folder.replace(',', '')
+    folder= folder.replace(' ', '')
+
+    query = {"name": f"folder_{folder}"}
+    result = collection.find(query)
+    for i in result:
+        print(i)
+        key = i["key"]
+    return key
+
+
+
+def edit_key(folder, key):
+    filter_to_found = {"name": f"folder_{folder}"}
+    new_key = { "$set": { 'key': key } }
+    collection.update_one(filter_to_found, new_key)
 
 # add_account("ori", "123")
 # search("gilad")
